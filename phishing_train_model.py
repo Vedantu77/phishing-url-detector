@@ -1,37 +1,17 @@
-import sqlite3
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
-import joblib
+import pickle
 
-# Connect to SQLite database
-conn = sqlite3.connect('database/phishing_data.db')
+# Load feature and label datasets
+features = pd.read_csv('dataset/features.csv')
+labels = pd.read_csv('dataset/labels.csv')
 
-# Load extracted features
-df = pd.read_sql_query("SELECT * FROM phishing_features", conn)
+# Train model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(features, labels.values.ravel())
 
-# Prepare features (X) and labels (y)
-X = df.drop(columns=['label'])
-y = df['label']
+# Save trained model
+with open('phishing_model.pkl', 'wb') as f:
+    pickle.dump(model, f)
 
-# Split into training and testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Train Random Forest
-clf = RandomForestClassifier(n_estimators=100, random_state=42)
-clf.fit(X_train, y_train)
-
-# Predict on test set
-y_pred = clf.predict(X_test)
-
-# Evaluate
-accuracy = accuracy_score(y_test, y_pred)
-print(f"✅ Model trained with accuracy: {accuracy * 100:.2f}%")
-print(classification_report(y_test, y_pred))
-
-# Save the trained model
-joblib.dump(clf, 'phishing_model.pkl')
-print("✅ Trained model saved as 'phishing_model.pkl'.")
-
-conn.close()
+print("Model trained and saved successfully.")

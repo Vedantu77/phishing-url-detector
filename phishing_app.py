@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import re
 
-# ======= Hide Streamlit UI Elements =======
+# Hide Streamlit UI for clean appearance
 hide_streamlit_style = """
     <style>
     #MainMenu {visibility: hidden;}
@@ -15,11 +15,11 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# ======= Load your trained model =======
+# Load your trained phishing detection model
 with open('phishing_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-# ======= Feature Extraction Function =======
+# Feature extraction from URL
 def extract_features(url):
     features = []
     features.append(len(url))
@@ -30,7 +30,7 @@ def extract_features(url):
     features.append(int(bool(re.search(r'@', url))))
     return np.array(features).reshape(1, -1)
 
-# ======= Modern UI =======
+# UI
 st.markdown(
     """
     <h1 style='text-align: center; font-size: 3em;'>🔒 Phishing URL Detector</h1>
@@ -43,12 +43,10 @@ st.markdown(
 
 st.markdown("---")
 
-# Center input box and button using columns
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     url_input = st.text_input(" ", placeholder="Paste or type the URL here...")
-
     check = st.button("🚀 Check URL")
 
     if check and url_input != "":
@@ -59,4 +57,3 @@ with col2:
             st.success("✅ This URL is **legitimate**.")
         else:
             st.error("⚠️ Warning: This URL is **phishing**.")
-
