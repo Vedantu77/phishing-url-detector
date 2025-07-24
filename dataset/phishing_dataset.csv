@@ -1,0 +1,11 @@
+url,length,has_https,num_digits,label
+http://freeoffer.example.com,27,0,0,1
+https://www.google.com,22,1,0,0
+http://login-account-security-update.ru,38,0,0,1
+https://github.com,19,1,0,0
+http://paypal.secure.login.abcxyz.com,39,0,0,1
+https://www.microsoft.com,26,1,0,0
+http://update.bank-account-verification.in,40,0,1,1
+https://www.wikipedia.org,24,1,0,0
+http://secure-update-payment-portal.tk,35,0,2,1
+https://www.python.org,22,1,0,0

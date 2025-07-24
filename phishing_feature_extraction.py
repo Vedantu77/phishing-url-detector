@@ -1,20 +1,29 @@
 import pandas as pd
+from urllib.parse import urlparse
 
 # Load dataset
 df = pd.read_csv('dataset/phishing_dataset.csv')
 
-# Feature engineering
-df['url_length'] = df['url'].apply(len)
-df['has_https'] = df['url'].apply(lambda x: int('https://' in x))
-df['num_dots'] = df['url'].apply(lambda x: x.count('.'))
-df['has_numbers'] = df['url'].apply(lambda x: int(any(char.isdigit() for char in x)))
-df['has_hyphen'] = df['url'].apply(lambda x: int('-' in x))
-df['has_at'] = df['url'].apply(lambda x: int('@' in x))
+# Feature extraction function
+def extract_features(url):
+    parsed = urlparse(url)
+    features = {
+        'url_length': len(url),
+        'has_at': '@' in url,
+        'has_ip': parsed.hostname.replace('.', '').isdigit() if parsed.hostname else False,
+        'num_dots': url.count('.'),
+        'num_hyphens': url.count('-'),
+        'num_subdirs': url.count('/'),
+        'https': parsed.scheme == 'https',
+    }
+    return features
 
-# Keep features + target
-features = df[['url_length', 'has_https', 'num_dots', 'has_numbers', 'has_hyphen', 'has_at']]
+# Apply feature extraction
+features = df['url'].apply(extract_features).apply(pd.Series)
 labels = df['label']
 
-# Save features and labels for model training
+# Save
 features.to_csv('dataset/features.csv', index=False)
 labels.to_csv('dataset/labels.csv', index=False)
+
+print("[✅] Feature extraction complete. Saved 'features.csv' and 'labels.csv'.")

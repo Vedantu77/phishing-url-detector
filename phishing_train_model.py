@@ -1,17 +1,25 @@
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-import pickle
+import joblib
 
-# Load feature and label datasets
-features = pd.read_csv('dataset/features.csv')
-labels = pd.read_csv('dataset/labels.csv')
+# Prepare training data with the exact same features as in your app
+data = pd.read_csv('phishing_dataset.csv')
 
-# Train model
+# Ensure these columns exactly match extract_features output
+features = data[[
+    'url_length',
+    'https',
+    'has_at',
+    'num_dots',
+    'num_hyphens',
+    'num_subdirs',
+    'has_ip'
+]]
+
+labels = data['label']  # Ensure your CSV has a 'label' column
+
 model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(features, labels.values.ravel())
+model.fit(features, labels)
 
-# Save trained model
-with open('phishing_model.pkl', 'wb') as f:
-    pickle.dump(model, f)
-
-print("Model trained and saved successfully.")
+joblib.dump(model, 'phishing_model.joblib')
+print("✅ Model trained and saved successfully using joblib.")
